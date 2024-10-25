@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  sku           String    @unique
+  description   String
+  price         Decimal
+  stockLevel    Int       @default(0)
+  minStockLevel Int       @default(5)
+  category      String    // Changed from enum to String
+  status        String    @default("ACTIVE") // Changed from enum to String
+  specifications Json?
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  inventoryLogs InventoryLog[]
+}
+
+model InventoryLog {
+  id            String    @id @default(cuid())
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id])
+  type          String    // Changed from enum to String
+  quantity      Int
+  notes         String?
+  userId        String
+  createdAt     DateTime  @default(now())
+}
